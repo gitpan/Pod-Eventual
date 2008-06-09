@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -21,17 +21,20 @@ sub read_handle {
       $self->handle_event($current) if $current;
       undef $current;
       $self->handle_event({
-        type    => 'command',
-        command => 'cut',
-        content => $content,
+        type       => 'command',
+        command    => 'cut',
+        content    => $content,
+        start_line => $handle->input_line_number,
       });
       next LINE;
     }
 
     $in_pod = 1 if $line =~ /^=\S+/;
 
-    # consider doing $self->alien_line($line) here -- rjbs, 2008-06-05
-    next LINE unless $in_pod;
+    unless ($in_pod) {
+      $self->handle_nonpod($line, $handle->input_line_number);
+      next LINE;
+    }
 
     if ($line =~ /^$/) {
       $self->handle_event($current) if $current;
@@ -48,9 +51,10 @@ sub read_handle {
       my $command = $1;
       my $content = "$2$3";
       $current = {
-        type    => 'command',
-        command => $command,
-        content => $content,
+        type       => 'command',
+        command    => $command,
+        content    => $content,
+        start_line => $handle->input_line_number,
       };
       next LINE;
     }
@@ -58,22 +62,31 @@ sub read_handle {
     if ($line =~ /^(\s+.+)\z/s) {
       my $content = $1;
       $current = {
-        type    => 'verbatim',
-        content => $content,
+        type       => 'verbatim',
+        content    => $content,
+        start_line => $handle->input_line_number,
       };
       next LINE;
     }
         
-    $current = { type => 'text', content => $line };
+    $current = { 
+      type       => 'text',
+      content    => $line,
+      start_line => $handle->input_line_number,
+    };
   }
 
   $self->handle_event($current) if $current;
   return;
 }
 
+
 sub handle_event {
   die '...';
 }
+
+
+sub handle_nonpod { }
 
 1;
 
@@ -87,7 +100,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -105,7 +118,8 @@ version 0.001
 POD is a pretty simple format to write, but it can be a big pain to deal with
 reading it and doing anything useful with it.  Most existing POD parsers care
 about semantics, like whether a C<=item> occurred after an C<=over> but before
-a C<back>, figuring out how to link a C<< L<> >>, and other things like that.
+a C<back>, figuring out how to link a C<< LE<lt>E<gt> >>, and other things like
+that.
 
 Pod::Eventual is much less ambitious and much more stupid.  Fortunately, stupid
 is often better.  (That's what I keep telling myself, anyway.)
@@ -131,7 +145,7 @@ A simple header:
 
     =head1 NAME
 
-    { type => 'command', command => 'head1', content => "NAME\n" }
+    { type => 'command', command => 'head1', content => "NAME\n", start_line => 4 }
 
 Notice that the content includes the trailing newline.  That's to maintain
 similarity with this possibly-surprising case:
@@ -143,6 +157,7 @@ similarity with this possibly-surprising case:
       type    => 'command',
       command => 'for',
       content => "HTML\nWe're actually still in the command event, here.\n",
+      start_line => 8,
     }
 
 Pod::Eventual does not care what the command is.  It doesn't keep track of what
@@ -152,7 +167,7 @@ special case is C<=cut>, which is never more than one line.
     =cut
     We are no longer parsing POD when this line is read.
 
-    { type => 'command', command => 'cut', content => "\n" }
+    { type => 'command', command => 'cut', content => "\n", start_line => 15 }
 
 Waiving this special case may be an option in the future.
 
@@ -165,16 +180,20 @@ a verbatim event.
 
 Text events look like this:
 
-    { type => 'text', content => "a string of text ending with a\n" }
+    { type => 'text', content => "a string of text ending with a\n", start_line =>  16 }
 
 =head2 Verbatim Events
 
 Verbatim events are identical to text events, but are created when the first
 line of text begins with whitespace.  The only semantic difference is that
 verbatim events should not be subject to interpretation as POD text (for things
-like C<< L<> >> and so on).  They are often also rendered in monospace.
+like C<< LE<lt>E<gt> >> and so on).  They are often also rendered in monospace.
 
 Pod::Eventual doesn't care.
+
+=cut 
+
+=cut 
 
 =cut 
 
@@ -202,6 +221,18 @@ handle.
 
 This behaves just like C<read_handle>, but expects a string containing POD
 rather than a handle.
+
+=head2 handle_event
+
+This method is called each time Pod::Evental finishes scanning for a new POD
+event.  It must be implemented by a subclass or it will raise an exception.
+
+=head2 handle_nonpod
+
+This method is called each time a non-POD line is seen -- that is, lines after
+C<=cut> and before another command.
+
+If unimplemented by a subclass, it does nothing by default.
 
 =head1 AUTHOR
 

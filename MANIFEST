@@ -7,3 +7,5 @@ README
 eg/test.pod
 lib/Pod/Eventual.pm
 t/basic.t
+t/release-pod-coverage.t
+t/release-pod-syntax.t

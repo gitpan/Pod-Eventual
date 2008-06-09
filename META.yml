@@ -2,9 +2,9 @@
 abstract: read a POD document as a series of trivial events
 author: 
   - Ricardo SIGNES <rjbs@cpan.org>
-generated_by: Dist::Zilla::Plugin::MetaYaml version 0.003
+generated_by: Dist::Zilla::Plugin::MetaYaml version 0.004
 license: perl
 name: Pod-Eventual
 requires: 
   Mixin::Linewise::Readers: 0.001
-version: 0.001
+version: 0.002
