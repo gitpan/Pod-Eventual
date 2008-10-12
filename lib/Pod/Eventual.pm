@@ -1,10 +1,12 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
+
+use Carp ();
 
 
 sub read_handle {
@@ -82,7 +84,7 @@ sub read_handle {
 
 
 sub handle_event {
-  die '...';
+  Carp::confess("handle_event not implemented by $_[0]");
 }
 
 
@@ -100,7 +102,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -191,12 +193,6 @@ like C<< LE<lt>E<gt> >> and so on).  They are often also rendered in monospace.
 
 Pod::Eventual doesn't care.
 
-=cut 
-
-=cut 
-
-=cut 
-
 =head1 METHODS
 
 =head2 read_handle
@@ -245,5 +241,6 @@ This software is copyright (c) 2008 by Ricardo SIGNES.
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
 
+=cut 
 
 
