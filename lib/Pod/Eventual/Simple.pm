@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual::Simple;
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 use Pod::Eventual;
 BEGIN { our @ISA = 'Pod::Eventual' }
@@ -15,7 +15,7 @@ sub new {
 
 sub read_handle {
   my ($self, $handle, $arg) = @_;
-  return $self->new->read_handle($handle, $arg) unless ref $self;
+  $self = $self->new unless ref $self;
   $self->SUPER::read_handle($handle, $arg);
   return [ @$self ];
 }
@@ -26,11 +26,11 @@ sub handle_event {
 }
 
 sub handle_nonpod {
-  my ($self, $line) = @_;
-  push @$self, $line;
+  my ($self, $line, $ln) = @_;
+  push @$self, { type => 'nonpod', content => $line, start_line => $ln };
 }
 
-1;  
+1;
 
 __END__
 
@@ -42,7 +42,7 @@ Pod::Eventual::Simple - just get an array of the stuff Pod::Eventual finds
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 
@@ -51,8 +51,16 @@ version 0.003
     my $output = Pod::Eventual::Simple->read_file('awesome.pod');
 
 This subclass just returns an array reference when you use the reading methods.
-The arrayref contains all the POD events and non-POD content.  If you just want
-the POD events, grep for references.
+The arrayref contains all the POD events and non-POD content.  Non-POD content
+is given as hashrefs like this:
+
+    {
+      type       => 'nonpod',
+      content    => "This is just some text\n",
+      start_line => 162,
+    }
+
+For just the POD events, grep for C<type> not equals "nonpod"
 
 =head1 AUTHOR
 
