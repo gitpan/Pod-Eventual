@@ -7,4 +7,4 @@ license: perl
 name: Pod-Eventual
 requires: 
   Mixin::Linewise::Readers: 0.001
-version: 0.004
+version: 0.005

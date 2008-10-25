@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -38,7 +38,7 @@ sub read_handle {
       next LINE;
     }
 
-    if ($line =~ /^$/) {
+    if ($line =~ /^\s*$/) {
       $self->handle_event($current) if $current;
       undef $current;
       next LINE;
@@ -102,7 +102,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

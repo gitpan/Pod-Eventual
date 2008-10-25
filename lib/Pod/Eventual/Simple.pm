@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual::Simple;
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 use Pod::Eventual;
 BEGIN { our @ISA = 'Pod::Eventual' }
@@ -42,7 +42,7 @@ Pod::Eventual::Simple - just get an array of the stuff Pod::Eventual finds
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 
