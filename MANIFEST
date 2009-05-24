@@ -1,9 +1,10 @@
 Changes
 LICENSE
 MANIFEST
-META.yml
+META.json
 Makefile.PL
 README
+eg/blanks.pod
 eg/cut-into.pl
 eg/dump.pl
 eg/non-empty-blank.pod
@@ -11,4 +12,5 @@ eg/test.pod
 lib/Pod/Eventual.pm
 lib/Pod/Eventual/Simple.pm
 t/basic.t
+t/blanks.t
 t/nonempty.t

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual::Simple;
-our $VERSION = '0.005';
+our $VERSION = '0.091440';
 
 use Pod::Eventual;
 BEGIN { our @ISA = 'Pod::Eventual' }
@@ -25,6 +25,8 @@ sub handle_event {
   push @$self, $event;
 }
 
+BEGIN { *handle_blank = \&handle_event; }
+
 sub handle_nonpod {
   my ($self, $line, $ln) = @_;
   push @$self, { type => 'nonpod', content => $line, start_line => $ln };
@@ -42,7 +44,7 @@ Pod::Eventual::Simple - just get an array of the stuff Pod::Eventual finds
 
 =head1 VERSION
 
-version 0.005
+version 0.091440
 
 =head1 SYNOPSIS
 
@@ -51,7 +53,7 @@ version 0.005
     my $output = Pod::Eventual::Simple->read_file('awesome.pod');
 
 This subclass just returns an array reference when you use the reading methods.
-The arrayref contains all the POD events and non-POD content.  Non-POD content
+The arrayref contains all the Pod events and non-Pod content.  Non-Pod content
 is given as hashrefs like this:
 
     {
@@ -62,13 +64,19 @@ is given as hashrefs like this:
 
 For just the POD events, grep for C<type> not equals "nonpod"
 
+=begin Pod::Coverage
+
+    new
+
+=end Pod::Coverage
+
 =head1 AUTHOR
 
   Ricardo SIGNES <rjbs@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2008 by Ricardo SIGNES.
+This software is copyright (c) 2009 by Ricardo SIGNES.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.

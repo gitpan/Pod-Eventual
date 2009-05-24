@@ -1,0 +1,16 @@
+{
+   "resources" : {
+      "repository" : "http://github.com/rjbs/pod-eventual/tree"
+   },
+   "generated_by" : "Dist::Zilla::Plugin::MetaJSON version 1.091370",
+   "version" : "0.091440",
+   "name" : "Pod-Eventual",
+   "requires" : {
+      "Mixin::Linewise::Readers" : "0.001"
+   },
+   "abstract" : "read a POD document as a series of trivial events",
+   "author" : [
+      "Ricardo SIGNES <rjbs@cpan.org>"
+   ],
+   "license" : "perl"
+}

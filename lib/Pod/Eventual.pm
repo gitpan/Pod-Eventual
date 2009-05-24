@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.005';
+our $VERSION = '0.091440';
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -31,7 +31,7 @@ sub read_handle {
       next LINE;
     }
 
-    $in_pod = 1 if $line =~ /^=\S+/;
+    $in_pod = 1 if $line =~ /\A=[a-z]/i;
 
     unless ($in_pod) {
       $self->handle_nonpod($line, $handle->input_line_number);
@@ -39,9 +39,18 @@ sub read_handle {
     }
 
     if ($line =~ /^\s*$/) {
-      $self->handle_event($current) if $current;
+      if ($current and $current->{type} ne 'blank') {
+        $self->handle_event($current);
+
+        $current = {
+          type       => 'blank',
+          content    => '',
+          start_line => $handle->input_line_number,
+        };
+      }
+    } elsif ($current and $current->{type} eq 'blank') {
+      $self->handle_blank($current);
       undef $current;
-      next LINE;
     }
 
     if ($current) {
@@ -49,7 +58,7 @@ sub read_handle {
       next LINE;
     }
 
-    if ($line =~ /^=(\S+)(?:\s*)(.*?)(\n)\z/) {
+    if ($line =~ /^=([a-z]+\S*)(?:\s*)(.*?)(\n)\z/i) {
       my $command = $1;
       my $content = "$2$3";
       $current = {
@@ -90,6 +99,9 @@ sub handle_event {
 
 sub handle_nonpod { }
 
+
+sub handle_blank  { }
+
 1;
 
 __END__
@@ -102,7 +114,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.005
+version 0.091440
 
 =head1 SYNOPSIS
 
@@ -169,7 +181,12 @@ special case is C<=cut>, which is never more than one line.
     =cut
     We are no longer parsing POD when this line is read.
 
-    { type => 'command', command => 'cut', content => "\n", start_line => 15 }
+    {
+      type    => 'command',
+      command => 'cut',
+      content => "\n",
+      start_line => 15,
+    }
 
 Waiving this special case may be an option in the future.
 
@@ -182,7 +199,11 @@ a verbatim event.
 
 Text events look like this:
 
-    { type => 'text', content => "a string of text ending with a\n", start_line =>  16 }
+    {
+      type    => 'text',
+      content => "a string of text ending with a\n",
+      start_line =>  16
+    }
 
 =head2 Verbatim Events
 
@@ -230,13 +251,19 @@ C<=cut> and before another command.
 
 If unimplemented by a subclass, it does nothing by default.
 
+=head2 handle_blank
+
+This method is called at the end of a sequence of one or more blank lines.
+
+If unimplemented by a subclass, it does nothing by default.
+
 =head1 AUTHOR
 
   Ricardo SIGNES <rjbs@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2008 by Ricardo SIGNES.
+This software is copyright (c) 2009 by Ricardo SIGNES.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as perl itself.
