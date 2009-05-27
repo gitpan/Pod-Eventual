@@ -1,6 +1,10 @@
 Revision history for Pod-Eventual
 
-0.091440  2009-05-24 03:18:55 UTC
+0.091470  2009-05-27 15:03:19 UTC
+          eliminate verbatim events; verbatim detection is left to a higher
+          level library
+
+0.091440  2009-05-23
           add "blank" events to capture blank lines
 
 0.006     2008-10-25

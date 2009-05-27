@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual::Simple;
-our $VERSION = '0.091440';
+our $VERSION = '0.091470';
 
 use Pod::Eventual;
 BEGIN { our @ISA = 'Pod::Eventual' }
@@ -44,7 +44,7 @@ Pod::Eventual::Simple - just get an array of the stuff Pod::Eventual finds
 
 =head1 VERSION
 
-version 0.091440
+version 0.091470
 
 =head1 SYNOPSIS
 
@@ -64,11 +64,7 @@ is given as hashrefs like this:
 
 For just the POD events, grep for C<type> not equals "nonpod"
 
-=begin Pod::Coverage
-
-    new
-
-=end Pod::Coverage
+=for Pod::Coverage new
 
 =head1 AUTHOR
 
