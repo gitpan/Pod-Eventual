@@ -6,14 +6,15 @@
       "version" : 1.4,
       "url" : "http://module-build.sourceforge.net/META-spec-v1.4.html"
    },
-   "generated_by" : "Dist::Zilla::Plugin::MetaJSON version 1.091440",
-   "version" : "0.091470",
+   "generated_by" : "Dist::Zilla::Plugin::MetaJSON version 1.091480",
+   "version" : "0.091480",
    "name" : "Pod-Eventual",
    "author" : [
       "Ricardo SIGNES <rjbs@cpan.org>"
    ],
    "license" : "perl",
    "requires" : {
+      "Test::Deep" : "0",
       "Mixin::Linewise::Readers" : "0.001"
    },
    "abstract" : "read a POD document as a series of trivial events"

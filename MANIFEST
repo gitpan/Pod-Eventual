@@ -8,9 +8,11 @@ eg/blanks.pod
 eg/cut-into.pl
 eg/dump.pl
 eg/non-empty-blank.pod
+eg/non-pod.pl
 eg/test.pod
 lib/Pod/Eventual.pm
 lib/Pod/Eventual/Simple.pm
 t/basic.t
 t/blanks.t
+t/non-pod.t
 t/nonempty.t

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.091470';
+our $VERSION = '0.091480';
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -17,7 +17,7 @@ sub read_handle {
   my $current;
 
   LINE: while (my $line = $handle->getline) {
-    if ($line =~ /^=cut(?:\s*)(.*?)(\n)\z/) {
+    if ($in_pod and $line =~ /^=cut(?:\s*)(.*?)(\n)\z/) {
       my $content = "$1$2";
       $in_pod = 0;
       $self->handle_event($current) if $current;
@@ -31,10 +31,23 @@ sub read_handle {
       next LINE;
     }
 
-    $in_pod = 1 if $line =~ /\A=[a-z]/i;
+    if ($line =~ /\A=[a-z]/i) {
+      if ($current and not $in_pod) {
+        $self->handle_nonpod($current);
+        undef $current;
+      }
 
-    unless ($in_pod) {
-      $self->handle_nonpod($line, $handle->input_line_number);
+      $in_pod = 1;
+    }
+
+    if (not $in_pod) {
+      $current ||= {
+        type       => 'nonpod',
+        start_line => $handle->input_line_number,
+        content    => '',
+      };
+
+      $current->{content} .= $line;
       next LINE;
     }
 
@@ -77,7 +90,14 @@ sub read_handle {
     };
   }
 
-  $self->handle_event($current) if $current;
+  if ($current) {
+    my $method = $current->{type} eq 'blank'  ? 'handle_blank'
+               : $current->{type} eq 'nonpod' ? 'handle_nonpod'
+               :                                'handle_event';
+
+    $self->$method($current) if $current;
+  }
+
   return;
 }
 
@@ -104,18 +124,18 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.091470
+version 0.091480
 
 =head1 SYNOPSIS
 
-    package Your::Pod::Parser;
-    use base 'Pod::Eventual';
+  package Your::Pod::Parser;
+  use base 'Pod::Eventual';
 
-    sub handle_event {
-      my ($self, $event) = @_;
+  sub handle_event {
+    my ($self, $event) = @_;
 
-      print Dumper($event);
-    }
+    print Dumper($event);
+  }
 
 =head1 DESCRIPTION
 
@@ -147,36 +167,36 @@ produced.
 
 A simple header:
 
-    =head1 NAME
+  =head1 NAME
 
-    { type => 'command', command => 'head1', content => "NAME\n", start_line => 4 }
+  { type => 'command', command => 'head1', content => "NAME\n", start_line => 4 }
 
 Notice that the content includes the trailing newline.  That's to maintain
 similarity with this possibly-surprising case:
 
-    =for HTML
-    We're actually still in the command event, here.
+  =for HTML
+  We're actually still in the command event, here.
 
-    {
-      type    => 'command',
-      command => 'for',
-      content => "HTML\nWe're actually still in the command event, here.\n",
-      start_line => 8,
-    }
+  {
+    type    => 'command',
+    command => 'for',
+    content => "HTML\nWe're actually still in the command event, here.\n",
+    start_line => 8,
+  }
 
 Pod::Eventual does not care what the command is.  It doesn't keep track of what
 it's seen or whether you've used a command that isn't defined.  The only
 special case is C<=cut>, which is never more than one line.
 
-    =cut
-    We are no longer parsing POD when this line is read.
+  =cut
+  We are no longer parsing POD when this line is read.
 
-    {
-      type    => 'command',
-      command => 'cut',
-      content => "\n",
-      start_line => 15,
-    }
+  {
+    type    => 'command',
+    command => 'cut',
+    content => "\n",
+    start_line => 15,
+  }
 
 Waiving this special case may be an option in the future.
 
@@ -192,17 +212,17 @@ Pod::Eventual doesn't care.
 
 Text events look like this:
 
-    {
-      type    => 'text',
-      content => "a string of text ending with a\n",
-      start_line =>  16
-    }
+  {
+    type    => 'text',
+    content => "a string of text ending with a\n",
+    start_line =>  16
+  }
 
 =head1 METHODS
 
 =head2 read_handle
 
-    Pod::Eventual->read_handle($io_handle, \%arg);
+  Pod::Eventual->read_handle($io_handle, \%arg);
 
 This method iterates through the lines of a handle, producing events and
 calling the C<handle_event> method.
@@ -230,8 +250,8 @@ event.  It must be implemented by a subclass or it will raise an exception.
 
 =head2 handle_nonpod
 
-This method is called each time a non-POD line is seen -- that is, lines after
-C<=cut> and before another command.
+This method is called each time a non-POD segment is seen -- that is, lines
+after C<=cut> and before another command.
 
 If unimplemented by a subclass, it does nothing by default.
 

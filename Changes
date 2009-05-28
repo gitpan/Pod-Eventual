@@ -1,6 +1,9 @@
 Revision history for Pod-Eventual
 
-0.091470  2009-05-27 15:03:19 UTC
+0.091480  2009-05-28 13:50:52 UTC
+          nonpod events are now monolithic for each nonpod segment
+
+0.091470  2009-05-27
           eliminate verbatim events; verbatim detection is left to a higher
           level library
 
