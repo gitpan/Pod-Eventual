@@ -6,6 +6,9 @@ our @events;
 
 {
   package Pod::Gather;
+our $VERSION = '0.093170';
+
+
   use base 'Pod::Eventual';
   sub handle_event { push @events, $_[1] }
 }

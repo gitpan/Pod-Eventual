@@ -16,3 +16,5 @@ t/basic.t
 t/blanks.t
 t/non-pod.t
 t/nonempty.t
+t/release-pod-coverage.t
+t/release-pod-syntax.t

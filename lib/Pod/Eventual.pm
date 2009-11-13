@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.091480';
+our $VERSION = '0.093170';
+
 
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -115,7 +116,6 @@ sub handle_blank  { }
 1;
 
 __END__
-
 =pod
 
 =head1 NAME
@@ -124,11 +124,14 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.091480
+version 0.093170
 
 =head1 SYNOPSIS
 
   package Your::Pod::Parser;
+our $VERSION = '0.093170';
+
+
   use base 'Pod::Eventual';
 
   sub handle_event {
@@ -154,9 +157,52 @@ to the C<handle_event> method.  This method should be implemented by
 Pod::Eventual subclasses.  If it isn't, Pod::Eventual's own C<handle_event>
 will be called, and will raise an exception.
 
+=head1 METHODS
+
+=head2 read_handle
+
+  Pod::Eventual->read_handle($io_handle, \%arg);
+
+This method iterates through the lines of a handle, producing events and
+calling the C<handle_event> method.
+
+The only valid argument in C<%arg> (for now) is C<in_pod>, which indicates
+whether we should assume that we are parsing pod when we start parsing the
+file.  By default, this is false.
+
+This is useful to behave differently when reading a F<.pm> or F<.pod> file.
+
+=head2 read_file
+
+This behaves just like C<read_handle>, but expects a filename rather than a
+handle.
+
+=head2 read_string
+
+This behaves just like C<read_handle>, but expects a string containing POD
+rather than a handle.
+
+=head2 handle_event
+
+This method is called each time Pod::Evental finishes scanning for a new POD
+event.  It must be implemented by a subclass or it will raise an exception.
+
+=head2 handle_nonpod
+
+This method is called each time a non-POD segment is seen -- that is, lines
+after C<=cut> and before another command.
+
+If unimplemented by a subclass, it does nothing by default.
+
+=head2 handle_blank
+
+This method is called at the end of a sequence of one or more blank lines.
+
+If unimplemented by a subclass, it does nothing by default.
+
 =head1 EVENTS
 
-There are three kinds of events that Pod::Eventual will produce.  All are
+There are four kinds of events that Pod::Eventual will produce.  All are
 represented as hash references.
 
 =head2 Command Events
@@ -215,51 +261,32 @@ Text events look like this:
   {
     type    => 'text',
     content => "a string of text ending with a\n",
-    start_line =>  16
+    start_line =>  16,
   }
 
-=head1 METHODS
+=head2 Blank events
 
-=head2 read_handle
+These events represent blank lines (or many blank lines) within a Pod section.
 
-  Pod::Eventual->read_handle($io_handle, \%arg);
+Blank events look like this:
 
-This method iterates through the lines of a handle, producing events and
-calling the C<handle_event> method.
+  {
+    type    => 'blank',
+    content => "\n\n\n\n",
+    start_line => 21,
+  }
 
-The only valid argument in C<%arg> (for now) is C<in_pod>, which indicates
-whether we should assume that we are parsing pod when we start parsing the
-file.  By default, this is false.
+=head2 Non-Pod events
 
-This is useful to behave differently when reading a F<.pm> or F<.pod> file.
+These events represent non-Pod segments of the input.
 
-=head2 read_file
+Non-Pod events look like this:
 
-This behaves just like C<read_handle>, but expects a filename rather than a
-handle.
-
-=head2 read_string
-
-This behaves just like C<read_handle>, but expects a string containing POD
-rather than a handle.
-
-=head2 handle_event
-
-This method is called each time Pod::Evental finishes scanning for a new POD
-event.  It must be implemented by a subclass or it will raise an exception.
-
-=head2 handle_nonpod
-
-This method is called each time a non-POD segment is seen -- that is, lines
-after C<=cut> and before another command.
-
-If unimplemented by a subclass, it does nothing by default.
-
-=head2 handle_blank
-
-This method is called at the end of a sequence of one or more blank lines.
-
-If unimplemented by a subclass, it does nothing by default.
+  {
+    type    => 'nonpod',
+    content => "#!/usr/bin/perl\nuse strict;\n\nuse Acme::ProgressBar\n\n",
+    start_line => 1,
+  }
 
 =head1 AUTHOR
 
@@ -270,8 +297,7 @@ If unimplemented by a subclass, it does nothing by default.
 This software is copyright (c) 2009 by Ricardo SIGNES.
 
 This is free software; you can redistribute it and/or modify it under
-the same terms as perl itself.
+the same terms as the Perl 5 programming language system itself.
 
-=cut 
-
+=cut
 
