@@ -1,0 +1,16 @@
+---
+abstract: 'read a POD document as a series of trivial events'
+author:
+  - 'Ricardo SIGNES <rjbs@cpan.org>'
+generated_by: 'Dist::Zilla version 1.093290'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Pod-Eventual
+requires:
+  Mixin::Linewise::Readers: 0.001
+  Test::Deep: 0
+resources:
+  repository: http://github.com/rjbs/pod-eventual
+version: 0.093330

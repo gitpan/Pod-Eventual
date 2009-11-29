@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual::Simple;
-our $VERSION = '0.093170';
+our $VERSION = '0.093330';
 
 
 use Pod::Eventual;
@@ -42,7 +42,7 @@ Pod::Eventual::Simple - just get an array of the stuff Pod::Eventual finds
 
 =head1 VERSION
 
-version 0.093170
+version 0.093330
 
 =head1 SYNOPSIS
 

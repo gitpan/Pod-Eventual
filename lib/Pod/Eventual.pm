@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.093170';
+our $VERSION = '0.093330';
 
 
 # ABSTRACT: read a POD document as a series of trivial events
@@ -124,12 +124,12 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.093170
+version 0.093330
 
 =head1 SYNOPSIS
 
   package Your::Pod::Parser;
-our $VERSION = '0.093170';
+our $VERSION = '0.093330';
 
 
   use base 'Pod::Eventual';

@@ -6,8 +6,8 @@
       "version" : 1.4,
       "url" : "http://module-build.sourceforge.net/META-spec-v1.4.html"
    },
-   "generated_by" : "Dist::Zilla version 1.093160",
-   "version" : "0.093170",
+   "generated_by" : "Dist::Zilla version 1.093290",
+   "version" : "0.093330",
    "name" : "Pod-Eventual",
    "author" : [
       "Ricardo SIGNES <rjbs@cpan.org>"
