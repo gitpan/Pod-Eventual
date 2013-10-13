@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 package Pod::Eventual;
-our $VERSION = '0.093330';
-
-
+{
+  $Pod::Eventual::VERSION = '0.093331';
+}
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
 
@@ -116,6 +116,7 @@ sub handle_blank  { }
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -124,14 +125,11 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.093330
+version 0.093331
 
 =head1 SYNOPSIS
 
   package Your::Pod::Parser;
-our $VERSION = '0.093330';
-
-
   use base 'Pod::Eventual';
 
   sub handle_event {
@@ -290,14 +288,13 @@ Non-Pod events look like this:
 
 =head1 AUTHOR
 
-  Ricardo SIGNES <rjbs@cpan.org>
+Ricardo SIGNES <rjbs@cpan.org>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2009 by Ricardo SIGNES.
+This software is copyright (c) 2013 by Ricardo SIGNES.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
