@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package Pod::Eventual;
 {
-  $Pod::Eventual::VERSION = '0.093331';
+  $Pod::Eventual::VERSION = '0.094000';
 }
 # ABSTRACT: read a POD document as a series of trivial events
 use Mixin::Linewise::Readers;
@@ -84,7 +84,7 @@ sub read_handle {
       next LINE;
     }
 
-    $current = { 
+    $current = {
       type       => 'text',
       content    => $line,
       start_line => $handle->input_line_number,
@@ -125,7 +125,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.093331
+version 0.094000
 
 =head1 SYNOPSIS
 
@@ -170,15 +170,18 @@ file.  By default, this is false.
 
 This is useful to behave differently when reading a F<.pm> or F<.pod> file.
 
+B<Important:> the handle is expected to have an encoding layer so that it will
+return text, not bytes, on reads.
+
 =head2 read_file
 
 This behaves just like C<read_handle>, but expects a filename rather than a
-handle.
+handle.  The file will be assumed to be UTF-8 encoded.
 
 =head2 read_string
 
 This behaves just like C<read_handle>, but expects a string containing POD
-rather than a handle.
+text rather than a handle.
 
 =head2 handle_event
 

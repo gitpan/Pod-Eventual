@@ -14,7 +14,6 @@ eg/non-pod.pl
 eg/test.pod
 lib/Pod/Eventual.pm
 lib/Pod/Eventual/Simple.pm
-t/00-compile.t
 t/000-report-versions-tiny.t
 t/basic.t
 t/blanks.t
