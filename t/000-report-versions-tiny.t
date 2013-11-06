@@ -50,7 +50,7 @@ sub pmver {
 
 eval { $v .= pmver('Carp','any version') };
 eval { $v .= pmver('ExtUtils::MakeMaker','6.30') };
-eval { $v .= pmver('Mixin::Linewise::Readers','any version') };
+eval { $v .= pmver('Mixin::Linewise::Readers','0.102') };
 eval { $v .= pmver('Test::Deep','any version') };
 eval { $v .= pmver('Test::More','0.96') };
 eval { $v .= pmver('strict','any version') };

@@ -2,10 +2,10 @@ use strict;
 use warnings;
 package Pod::Eventual;
 {
-  $Pod::Eventual::VERSION = '0.094000';
+  $Pod::Eventual::VERSION = '0.094001';
 }
 # ABSTRACT: read a POD document as a series of trivial events
-use Mixin::Linewise::Readers;
+use Mixin::Linewise::Readers 0.102;
 
 use Carp ();
 
@@ -125,7 +125,7 @@ Pod::Eventual - read a POD document as a series of trivial events
 
 =head1 VERSION
 
-version 0.094000
+version 0.094001
 
 =head1 SYNOPSIS
 
